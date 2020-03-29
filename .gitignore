@@ -1,1 +1,6 @@
 .psikuta
+integrators/mercateo/*csv
+integrators/mercateo/old/*
+integrators/mercateo/out/*
+integrators/mercateo/pdf/*
+integrators/mercateo/templ/*
