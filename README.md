@@ -1,5 +1,7 @@
 # Hilark
-Automation and monitoring scripting for the small company
+You will be able to find here some simple automation and monitoring scripting suitable for the small company.
+These *are not* claim to be any software guidelines nor a general approach directives.
+Each of the code pieces i adopted for the particular environment needs.
 
 ## Author
 Please contact me at o2o2@gazeta.pl
