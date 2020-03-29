@@ -1,1 +1,1 @@
-30 20 * * * /root/raport_brak_netu.sh | mail -s "Raport dostepnosci internetu - magazyn" aleksander.sokalski@hilark.eu -a 'From: Magazyn MASL'
+30 20 * * * /root/raport_brak_netu.sh | mail -s "Raport dostepnosci internetu - magazyn" **********@*********** -a 'From: Magazyn MASL'
