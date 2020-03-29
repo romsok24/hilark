@@ -2,7 +2,7 @@
 
 . $(dirname "$0")/.psikuta
 
-co_wyslac=$(find /kamery2TB/$(date +'%Y-%m-%d')_$1/ -iname "*_$2*" | head -n1)
+co_wyslac=$(find /var/lib/motioneye/$(date +'%Y-%m-%d')_$1/ -iname "*_$2*" | head -n1)
 echo "Znalazlem taki plik: $co_wyslac"
 if [[ $co_wyslac != $(cat /etc/motioneye/slack_sendf.lock) ]]; then
   echo "To jest nowe zdarzenie - wysylam zdjecie na Slacka"
