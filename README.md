@@ -3,6 +3,9 @@ You will be able to find here some simple automation and monitoring scripting su
 These *are not* claim to be any software guidelines nor a general approach directives.
 Each of the code pieces i adopted for the particular environment needs.
 
+## Usage
+The usage for particular scripts are described at the scipts beging - mostly... ;-)
+
 ## Author
 Please contact me at o2o2@gazeta.pl
 
