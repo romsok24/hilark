@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # ########################## Update the list of vebdors
 cd /usr/share/arp-scan
 sudo get-iab -v -u http://standards.ieee.org/develop/regauth/iab/iab.txt
