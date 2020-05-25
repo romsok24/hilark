@@ -1,6 +1,6 @@
 #!/bin/bash
 
-x=`ping -c1 192.168.10.13 2>&1 | grep -i unreachable`
+x=`ping -c1 192.168.10.13 2>&1 | grep -i "100% packet loss"`
 if [ ! "$x" = "" ]; then
         logger "Serwer monit02 jest down! Probuje obudzic."
         echo  "Serwer monit02 jest down! Probuje obudzic."
