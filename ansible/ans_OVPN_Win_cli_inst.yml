@@ -1,0 +1,50 @@
+---
+- hosts: ovpn_hosts
+  gather_facts: false
+  vars:
+    - admin: rom
+  vars_prompt:
+  # - name: admin
+  #   prompt: "Podaj nazwe zdalnego konta admina"
+  - name: pass
+    prompt: "Podaj haslo na admina "
+  
+  tasks:
+  - name: Configure WinRM authentication
+    # http://hilark.eu/remoting.bat
+    # http://hilark.eu/remoting.ps1
+    set_fact:
+        ansible_user: "{{ admin }}"
+        ansible_password: "{{ pass }}"
+        ansible_port: 5986
+        ansible_connection: winrm
+        ansible_winrm_read_timeout_sec: 120
+        ansible_winrm_operation_timeout_sec: 60
+        ansible_winrm_server_cert_validation: ignore
+  
+  - name: Prereq pip - wymagania wstępne
+    pip: 
+      name: requests, pywinrm
+    delegate_to: 127.0.0.1
+
+  - name: Kopiowanie plikow
+    win_copy:
+      src: files/
+      dest: c:\temp\
+
+  - name: "Dodanie certów OpenVPN 1/2"
+    win_command: certutil -addstore CA tapdriver_CA.cer
+    args:
+      chdir: c:\temp\
+
+  - name: "Dodanie certów OpenVPN 2/2"
+    win_command: certutil -addstore TrustedPublisher tapdriver_CA.cer
+    args:
+      chdir: c:\temp\
+
+  - name: Instalacja klienta OpenVPN
+    win_package:
+      path: c:\temp\openvpn-install-2.4.9-I601-Win7.exe
+      state: present
+      arguments:  /SELECT_OPENVPN=1 /SELECT_ASSOCIATIONS=1 /SELECT_OPENVPNGUI=1 /SELECT_SHORTCUTS=1 /SELECT_TAP=1 /S
+      product_id: "{1D196E37-60DF-454D-8DFE-539759110A09}"
