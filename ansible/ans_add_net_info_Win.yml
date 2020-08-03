@@ -1,0 +1,39 @@
+---
+- hosts: ovpn_hosts
+  gather_facts: false
+  vars:
+    - admin: ksawery
+  vars_prompt:
+  # - name: admin
+  #   prompt: "Podaj nazwe zdalnego konta admina"
+  - name: pass
+    prompt: "Podaj haslo na admina "
+  
+  tasks:
+  - name: Configure WinRM authentication
+    # http://hilark.eu/remoting.bat
+    # http://hilark.eu/remoting.ps1
+    set_fact:
+        ansible_user: "{{ admin }}"
+        ansible_password: "{{ pass }}"
+        ansible_port: 5986
+        ansible_connection: winrm
+        ansible_winrm_read_timeout_sec: 120
+        ansible_winrm_operation_timeout_sec: 60
+        ansible_winrm_server_cert_validation: ignore
+  
+  # - name: Prereq pip - wymagania wstępne
+  #   pip: 
+  #     name: requests, pywinrm
+  #   delegate_to: 127.0.0.1
+
+  - name: Kopiowanie plikow
+    win_copy:
+      src: files/Bginfo64.exe
+      dest: c:\temp\
+
+  - name: Create an application shortcut on the desktop
+    # https://download.sysinternals.com/files/BGInfo.zip
+    win_shortcut:
+      src: c:\temp\Bginfo64.exe
+      dest: C:\Users\Public\Desktop\Informacje.lnk
