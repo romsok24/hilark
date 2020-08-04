@@ -1,0 +1,40 @@
+---
+- hosts: ovpn_hosts
+  gather_facts: false
+  vars:
+    - admin: ksawery
+    - user2add: "{{ user2add }}"
+    - user2add_pass: "{{ user2add_pass }}"
+    - user2add_fname: "{{ user2add_fname }}"
+  vars_prompt:
+  # - name: admin
+  #   prompt: "Podaj nazwe zdalnego konta admina"
+  - name: pass
+    prompt: "Podaj haslo na admina "
+  
+  tasks:
+  - name: Configure WinRM authentication
+    # http://hilark.eu/remoting.bat
+    # http://hilark.eu/remoting.ps1
+    set_fact:
+        ansible_user: "{{ admin }}"
+        ansible_password: "{{ pass }}"
+        ansible_port: 5986
+        ansible_connection: winrm
+        ansible_winrm_read_timeout_sec: 120
+        ansible_winrm_operation_timeout_sec: 60
+        ansible_winrm_server_cert_validation: ignore
+  
+  # - name: Prereq pip - wymagania wstępne
+  #   pip: 
+  #     name: requests, pywinrm
+  #   delegate_to: 127.0.0.1
+
+  - name: "Zakładam konto dla użytkownika {{ user2add_fname }}"
+    win_user:
+      name: "{{ user2add }}"
+      fullname: "{{ user2add_fname }}"
+      password: "{{ user2add_pass }}"
+      state: present
+      groups:
+        - Users
