@@ -37,4 +37,4 @@
       password: "{{ user2add_pass }}"
       state: present
       groups:
-        - Users
+        - "Użytkownicy"
