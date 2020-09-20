@@ -2,13 +2,13 @@
 - hosts: ovpn_hosts
   gather_facts: false
   vars:
-    - admin: ksawery
+    - admin: rom
   vars_prompt:
-  # - name: admin
-  #   prompt: "Podaj nazwe zdalnego konta admina"
-  - name: pass
-    prompt: "Podaj haslo na admina "
-  
+    - name: admin
+      prompt: "Podaj nazwe zdalnego konta admina"
+    - name: pass
+      prompt: "Podaj haslo na admina "
+
   tasks:
   - name: Configure WinRM authentication
     # http://hilark.eu/remoting.bat
@@ -21,19 +21,26 @@
         ansible_winrm_read_timeout_sec: 120
         ansible_winrm_operation_timeout_sec: 60
         ansible_winrm_server_cert_validation: ignore
-  
-  # - name: Prereq pip - wymagania wstępne
-  #   pip: 
-  #     name: requests, pywinrm
-  #   delegate_to: 127.0.0.1
+
+  - name: Prereq pip - wymagania wstępne
+    pip:
+      name: requests, pywinrm
+    delegate_to: 127.0.0.1
 
   - name: Kopiowanie plikow
     win_copy:
-      src: files/Bginfo64.exe
+      src: files/toinstall/
       dest: c:\temp\
+
+  - name: Instalacja SKype
+    win_package:
+      path: c:\temp\Skype-8.64.0.80.exe
+      state: present
+      arguments:  /VERYSILENT /SP- /SUPPRESSMSGBOXES /NOCANCEL /NORESTART /NOLAUNCH
+      product_id: "{1D196E37-60DF-454D-8DFE-539759110A09}"
 
   - name: Create an application shortcut on the desktop
     # https://download.sysinternals.com/files/BGInfo.zip
     win_shortcut:
-      src: c:\temp\Bginfo64.exe
-      dest: C:\Users\Public\Desktop\Informacje.lnk
+      src: C:\Program Files (x86)\Microsoft\Skype for Desktop\Skype.exe
+      dest: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\Skype.lnk
