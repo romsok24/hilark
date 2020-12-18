@@ -1,1 +1,10 @@
 export PS1="\[\033[0;36m\][\u@\h:\w]#\[\033[0m\] "
+
+import gitlab
+gl = gitlab.Gitlab('https://gitlab.com', private_token='Token')
+groups = gl.groups.list()
+for each in groups:
+    group = gl.groups.get(each, lazy=True)
+    project_lst=group.projects.list(as_list=False)  #pagination
+    for item in project_lst:
+    project_id = gl.projects.get(item.attributes['id'])
