@@ -1,10 +1,13 @@
+# This is a simple code which monitors the Google sheet with the list of IT tasks,
+# and with every new task sends a Slack notification + creates a Trello cart 
+# The code presented below is based on Google examples at https://developers.google.com/sheets/api/quickstart/python
+
 from __future__ import print_function
 import os, pickle, requests, json
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-# The code presented below is based on Google examples at https://developers.google.com/sheets/api/quickstart/python
 # If modifying these scopes, delete the file token.pickle.
 exec(open('psikuta/config.py').read())
 
@@ -65,11 +68,19 @@ def main():
                 sl_payload = {
                     'channel': '#zadaniait',
                     'username': 'Nowe zadanie',
-                    'text': '<@aleksander> W rejestrze zadań IT utworzono nowe zadanie o nr ' + values[-1][1] +'\nTreść zadania: ' + values[-1][4] + '\n Utworzono dnia: ' + values[-1][3] + '\n Status: ' + values[-1][5] ,
+                    'text': sl_kogo_powiadomic + ' W rejestrze zadań IT utworzono nowe zadanie o nr ' + values[-1][1] +'\nTreść zadania: ' + values[-1][4] + '\n Utworzono dnia: ' + values[-1][3] + '\n Status: ' + values[-1][5] ,
                     'icon_emoji': ':new:'
                 }
-                r = requests.post(sl_url,data=json.dumps(sl_payload).replace('done',':white_check_mark: Done'))
+                # r = requests.post(sl_url,data=json.dumps(sl_payload).replace('done',':white_check_mark: Done'))
                 print('Slack send %s' % {json.dumps(sl_payload).replace('done',':white_check_mark: Done')} )
+                
+                tre_payload = {
+                    'name': values[-1][4],
+                    'desc': 'Nr tego zadania w Rejestrze Zadań IT: ' + values[-1][1] + '\nUtworzono dnia: ' + values[-1][3]
+                }
+                r = requests.post(tre_url_nowa_karta, data=json.dumps(tre_payload),headers={'Content-Type': 'application/json'})
+                print(f'Trello  status { r.status_code }')
+
 
 if __name__ == '__main__':
     main()
