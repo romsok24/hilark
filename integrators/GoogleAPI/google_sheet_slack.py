@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-# Below code is based on Google examples here: https://developers.google.com/sheets/api/quickstart/python
+# The code presented below is based on Google examples at https://developers.google.com/sheets/api/quickstart/python
 # If modifying these scopes, delete the file token.pickle.
 exec(open('psikuta/config.py').read())
 
