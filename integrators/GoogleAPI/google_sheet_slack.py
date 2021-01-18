@@ -1,5 +1,6 @@
 # This is a simple code which monitors the Google sheet with the list of IT tasks,
-# and with every new task sends a Slack notification + creates a Trello cart 
+# and with every new or updated task sends a Slack notification + creates (or update) a Trello cart 
+
 # The code presented below is based on Google examples at https://developers.google.com/sheets/api/quickstart/python
 
 from __future__ import print_function
@@ -49,7 +50,14 @@ def main():
                 if lokalny_wiersz[5] == values[-1][5]:
                     print(f'Brak zmian w rejestrze zadań IT: ostatni nr w rej: { lokalny_wiersz[1] } vs w jsonie lokalnym: { values[-1][1] }')
                 else:
+                    if values[-1][5] == 'done':
+                        r = requests.put(tre_url_zrobione.replace('IDKARTY',lokalny_wiersz[6]), headers={'Content-Type': 'application/json'})
+                    if values[-1][5] == 'ongoing':
+                        r = requests.put(tre_url_wtrakcie.replace('IDKARTY',lokalny_wiersz[6]), headers={'Content-Type': 'application/json'})    
+                    print(f'Aktualizacja Trello status { r.status_code }')
+
                     print(f'Zmiana statusu zadania nr {values[-1][1]} ( {values[-1][4]} ) zostanie zapisane do jsona.')
+                    values[-1].append(lokalny_wiersz[6])
                     with open('psikuta/ostatni-wiersz.json','w') as json_ostatni_w:
                         json.dump(values[-1], json_ostatni_w)
                         sl_payload = {
@@ -59,19 +67,16 @@ def main():
                             'icon_emoji': ':repeat_one:'
                         }
                         r = requests.post(sl_url,data=json.dumps(sl_payload).replace('done',':white_check_mark: Done'))
-                        print('Slack send %s' % {json.dumps(sl_payload).replace('done',':white_check_mark: Done')} )
-                        print(f'Zmiana statusu')
+                        # print('Slack send %s' % {json.dumps(sl_payload).replace('done',':white_check_mark: Done')} )
             else:
                 print(f'Nowe zadanie o nr {values[-1][1]} ( {values[-1][4]} ) zostanie zapisane do jsona.')
-                with open('psikuta/ostatni-wiersz.json','w') as json_ostatni_w:
-                    json.dump(values[-1], json_ostatni_w)
                 sl_payload = {
                     'channel': '#zadaniait',
                     'username': 'Nowe zadanie',
                     'text': sl_kogo_powiadomic + ' W rejestrze zadań IT utworzono nowe zadanie o nr ' + values[-1][1] +'\nTreść zadania: ' + values[-1][4] + '\n Utworzono dnia: ' + values[-1][3] + '\n Status: ' + values[-1][5] ,
                     'icon_emoji': ':new:'
                 }
-                # r = requests.post(sl_url,data=json.dumps(sl_payload).replace('done',':white_check_mark: Done'))
+                r = requests.post(sl_url,data=json.dumps(sl_payload).replace('done',':white_check_mark: Done'))
                 print('Slack send %s' % {json.dumps(sl_payload).replace('done',':white_check_mark: Done')} )
                 
                 tre_payload = {
@@ -79,8 +84,11 @@ def main():
                     'desc': 'Nr tego zadania w Rejestrze Zadań IT: ' + values[-1][1] + '\nUtworzono dnia: ' + values[-1][3]
                 }
                 r = requests.post(tre_url_nowa_karta, data=json.dumps(tre_payload),headers={'Content-Type': 'application/json'})
-                print(f'Trello  status { r.status_code }')
-
+                print(f'Trello  status { r.status_code }' )
+                
+                values[-1].append(json.loads(r.text)['id'])
+                with open('psikuta/ostatni-wiersz.json','w') as json_ostatni_w:
+                    json.dump(values[-1], json_ostatni_w)
 
 if __name__ == '__main__':
     main()
