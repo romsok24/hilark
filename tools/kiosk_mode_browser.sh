@@ -1,6 +1,6 @@
  #!/bin/sh
  
- # on raspbery pi you can run it from /etc/init.local
+ # on raspbery pi you can run it from /etc/init.local or /etc/rc.local
  
 xset -dpms # disable DPMS (Energy Star) features.
 xset s off # disable screen saver
